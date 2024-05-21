@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, Response
 from flask_mysqldb import MySQL
 
 app = Flask(__name__)
@@ -27,6 +27,26 @@ def get_mons():
     for result in sql_data:
         json_data.append(dict(zip(row_headers,result)))
     return mons_table(json_data)
+
+@app.route('/mons', methods=['POST'])
+def create_mon():
+    name = request.form.get('name')
+    hp = request.form.get('hp')
+    attack = request.form.get('attack')
+    defense = request.form.get('defense')
+    s_attack = request.form.get('s_attack')
+    s_defense = request.form.get('s_defense')
+    speed = request.form.get('speed')
+    type1 = request.form.get('type1')
+    type2 = request.form.get('type2')
+    if type2 == '':
+        type2 = None
+    
+    cur = mysql.connection.cursor()
+    cur.execute('''INSERT INTO mons (name, hp, attack, defense, s_attack, s_defense, speed, type1, type2) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)''', (name, hp, attack, defense, s_attack, s_defense, speed, type1, type2))
+    mysql.connection.commit()
+    cur.close()
+    return Response(status=200)
 
 def mons_table(mons):
     heads = list(mons[0].keys())[1:]
