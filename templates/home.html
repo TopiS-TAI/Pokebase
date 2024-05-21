@@ -26,10 +26,14 @@
         <label for="speed">Speed</label>
         <input type="text" name="speed" id="speed">
         <label for="type1">Type</label>
-        <input type="text" name="type1" id="type1">
+        <select name="type1" id="type1">
+            {type_options}
+        </select>
         <label for="type2">Secondary type</label>
-        <input type="text" name="type2" id="type2">
-        <input type="submit" value="Add">
+        <select name="type2" id="type2">
+            <option value="">-Ei tyyppiä-</option>
+            {type_options}
+        </select>        <input type="submit" value="Add">
     </form>
 </body>
 </html>
