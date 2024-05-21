@@ -6,34 +6,10 @@
     <script src="https://unpkg.com/htmx.org@1.9.12"></script>
     <link rel="stylesheet" href="/static/styles.css">
     <title>Pokemans</title>
+    <script defer src="/static/script.js"></script>
 </head>
 <body>
     <h1>Omakseni saan</h1>
     <div class="poke-list" hx-get="/mons" hx-trigger="load" hx-swap="innerhtml"></div>
-    <form hx-post="/mons">
-        <label for="name">Name</label>
-        <input type="text" name="name" id="name">
-        <label for="hp">HP</label>
-        <input type="text" name="hp" id="hp">
-        <label for="attack">Attack</label>
-        <input type="text" name="attack" id="attack">
-        <label for="defense">Defense</label>
-        <input type="text" name="defense" id="defense">
-        <label for="s_attack">Special Attack</label>
-        <input type="text" name="s_attack" id="s_attack">
-        <label for="s_defense">Special Defense</label>
-        <input type="text" name="s_defense" id="s_defense">
-        <label for="speed">Speed</label>
-        <input type="text" name="speed" id="speed">
-        <label for="type1">Type</label>
-        <select name="type1" id="type1">
-            {type_options}
-        </select>
-        <label for="type2">Secondary type</label>
-        <select name="type2" id="type2">
-            <option value="">-Ei tyyppiä-</option>
-            {type_options}
-        </select>        <input type="submit" value="Add">
-    </form>
 </body>
 </html>

@@ -68,7 +68,15 @@ def mons_table(mons):
             else:
                 table += f'<td>{mon[head]}</td>'
         table += '</tr>'
-    table += '</tbody></table>'
+    table += '<tr id="form-line">'
+    for head in heads:
+        if head == 'type1':
+            table += f'<td class="nopad"><select id="{head}">{create_type_options(types)}</select></td>'
+        elif head == 'type2':
+            table += f'<td class="nopad"><select id="{head}"><option value="">- No type -</option>{create_type_options(types)}</select></td>'
+        else:
+            table += f'<td contenteditable="true" id="cell-{head}"></td>'
+    table += '<td class="nopad"><button id="cell-add" hx-post="/mons">Add</button></td></tr></tbody></table>'
 
     return table
 
