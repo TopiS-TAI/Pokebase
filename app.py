@@ -49,6 +49,23 @@ def create_mon():
     cur = mysql.connection.cursor()
     cur.execute('''INSERT INTO mons (name, hp, attack, defense, s_attack, s_defense, speed, type1, type2) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)''', (name, hp, attack, defense, s_attack, s_defense, speed, type1, type2))
     mysql.connection.commit()
+    insert_id = cur.lastrowid
+    cur.execute('''SELECT * FROM mons WHERE id=%s''', ([insert_id]))
+    row_headers=[x[0] for x in cur.description]
+    sql_data = cur.fetchall()
+    cur.close()
+    json_data = []
+    for result in sql_data:
+        json_data.append(dict(zip(row_headers,result)))
+    row = mons_row(json_data[0])
+
+    return row
+
+@app.route('/mons/<int:id>', methods=['delete'])
+def delete_mon(id):
+    cur = mysql.connection.cursor()
+    cur.execute('''DELETE FROM mons WHERE mons.id = %s''', ([id]))
+    mysql.connection.commit()
     cur.close()
     return Response(status=200)
 
@@ -60,14 +77,14 @@ def mons_table(mons):
         table += f'<th>{head}</th>'
     table += '</tr></thead><tbody>'
     for mon in mons:
-        table += '<tr>'
+        table += f'<tr id="pokemon-{mon['id']}">'
         for head in heads:
             if head[:-1] == 'type':
                 type_name = next((type['name'] for type in types if type['id'] == mon[head]), None)
                 table += f'<td>{type_name}</td>'
             else:
                 table += f'<td>{mon[head]}</td>'
-        table += '</tr>'
+        table += f'<td class="nopad"><button hx-delete="/mons/{mon["id"]}" hx-target="#pokemon-{mon["id"]}" hx-swap="outerHTML" id="delete-{mon["id"]}">Delete</button></td></tr>'
     table += '<tr id="form-line">'
     for head in heads:
         if head == 'type1':
@@ -76,9 +93,22 @@ def mons_table(mons):
             table += f'<td class="nopad"><select id="{head}"><option value="">- No type -</option>{create_type_options(types)}</select></td>'
         else:
             table += f'<td contenteditable="true" id="cell-{head}"></td>'
-    table += '<td class="nopad"><button id="cell-add" hx-post="/mons">Add</button></td></tr></tbody></table>'
+    table += '<td class="nopad"><button id="cell-add" hx-post="/mons" hx-target="#form-line" hx-swap="beforebegin">Add</button></td></tr></tbody></table>'
 
     return table
+
+def mons_row(mon):
+    heads = list(mon.keys())[1:]
+    types = session.get('types', None)
+    row = f'<tr id="pokemon-{mon['id']}">'
+    for head in heads:
+        if head[:-1] == 'type':
+            type_name = next((type['name'] for type in types if type['id'] == mon[head]), None)
+            row += f'<td>{type_name}</td>'
+        else:
+            row += f'<td>{mon[head]}</td>'
+    row += f'<td class="nopad"><button hx-delete="/mons/{mon["id"]}" hx-target="#pokemon-{mon["id"]}" hx-swap="outerHTML" id="delete-{mon["id"]}">Delete</button></td></tr>'
+    return row
 
 def create_type_options(types):
     options = ''
