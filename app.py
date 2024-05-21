@@ -113,7 +113,7 @@ def mons_row(mon):
             row += f'<td class="text-cell">{mon[head]}</td>'
         elif head[:-1] == 'type':
             type_name = next((type['name'] for type in types if type['id'] == mon[head]), None)
-            row += f'<td>{type_name if type_name != None else '-'}</td>'
+            row += f'<td class="text-cell">{type_name if type_name != None else '-'}</td>'
         else:
             row += f'<td>{mon[head]}</td>'
     row += f'<td class="nopad"><button hx-delete="/mons/{mon["id"]}" hx-target="#pokemon-{mon["id"]}" hx-swap="outerHTML" id="delete-{mon["id"]}">Delete</button></td></tr>'
