@@ -58,8 +58,9 @@ def create_mon():
     for result in sql_data:
         json_data.append(dict(zip(row_headers,result)))
     row = mons_row(json_data[0])
-
-    return row
+    res = Response(row)
+    res.headers['HX-Trigger'] = 'clearForm'
+    return res
 
 @app.route('/mons/<int:id>', methods=['delete'])
 def delete_mon(id):
@@ -80,26 +81,26 @@ def mons_table(mons):
             table += f'<th>{head}</th>'
     table += '</tr></thead><tbody>'
     for mon in mons:
-        table += f'<tr id="pokemon-{mon['id']}">'
+        table += f'<tr id="pokemon-{mon["id"]}">'
         for head in heads:
             if head == 'name':
                 table += f'<td class="text-cell">{mon[head]}</td>'
             elif head[:-1] == 'type':
                 type_name = next((type['name'] for type in types if type['id'] == mon[head]), None)
-                table += f'<td class="text-cell">{type_name if type_name != None else '-'}</td>'
+                table += f'<td class="text-cell">{type_name if type_name != None else "-"}</td>'
             else:
                 table += f'<td>{mon[head]}</td>'
         table += f'<td class="nopad"><button hx-delete="/mons/{mon["id"]}" hx-target="#pokemon-{mon["id"]}" hx-swap="outerHTML" id="delete-{mon["id"]}">Delete</button></td></tr>'
     table += '<tr id="form-line">'
     for head in heads:
         if head == 'name':
-            table += f'<td class="text-cell" contenteditable="true" id="cell-{head}"></td>'
+            table += f'<td class="text-cell" contenteditable="true" id="cell-{head}" onkeydown="validateText(event)" onpaste="validateText(event)"></td>'
         elif head == 'type1':
             table += f'<td class="nopad"><select id="{head}">{create_type_options(types)}</select></td>'
         elif head == 'type2':
             table += f'<td class="nopad"><select id="{head}"><option value="">- No type -</option>{create_type_options(types)}</select></td>'
         else:
-            table += f'<td contenteditable="true" id="cell-{head}"></td>'
+            table += f'<td contenteditable="true" id="cell-{head}" onkeypress="validateNumbers(event)"></td>'
     table += '<td class="nopad"><button id="cell-add" hx-post="/mons" hx-target="#form-line" hx-swap="beforebegin">Add</button></td></tr></tbody></table>'
 
     return table
@@ -107,13 +108,13 @@ def mons_table(mons):
 def mons_row(mon):
     heads = list(mon.keys())[1:]
     types = session.get('types', None)
-    row = f'<tr id="pokemon-{mon['id']}">'
+    row = f'<tr id="pokemon-{mon["id"]}">'
     for head in heads:
         if head == 'name':
             row += f'<td class="text-cell">{mon[head]}</td>'
         elif head[:-1] == 'type':
             type_name = next((type['name'] for type in types if type['id'] == mon[head]), None)
-            row += f'<td class="text-cell">{type_name if type_name != None else '-'}</td>'
+            row += f'<td class="text-cell">{type_name if type_name != None else "-"}</td>'
         else:
             row += f'<td>{mon[head]}</td>'
     row += f'<td class="nopad"><button hx-delete="/mons/{mon["id"]}" hx-target="#pokemon-{mon["id"]}" hx-swap="outerHTML" id="delete-{mon["id"]}">Delete</button></td></tr>'
