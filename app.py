@@ -74,20 +74,27 @@ def mons_table(mons):
     types = session.get('types', None)
     table = '<table><thead><tr>'
     for head in heads:
-        table += f'<th>{head}</th>'
+        if head == 'name' or head[:-1] == 'type':
+            table += f'<th class="text-cell">{head}</th>'
+        else:
+            table += f'<th>{head}</th>'
     table += '</tr></thead><tbody>'
     for mon in mons:
         table += f'<tr id="pokemon-{mon['id']}">'
         for head in heads:
-            if head[:-1] == 'type':
+            if head == 'name':
+                table += f'<td class="text-cell">{mon[head]}</td>'
+            elif head[:-1] == 'type':
                 type_name = next((type['name'] for type in types if type['id'] == mon[head]), None)
-                table += f'<td>{type_name}</td>'
+                table += f'<td class="text-cell">{type_name if type_name != None else '-'}</td>'
             else:
                 table += f'<td>{mon[head]}</td>'
         table += f'<td class="nopad"><button hx-delete="/mons/{mon["id"]}" hx-target="#pokemon-{mon["id"]}" hx-swap="outerHTML" id="delete-{mon["id"]}">Delete</button></td></tr>'
     table += '<tr id="form-line">'
     for head in heads:
-        if head == 'type1':
+        if head == 'name':
+            table += f'<td class="text-cell" contenteditable="true" id="cell-{head}"></td>'
+        elif head == 'type1':
             table += f'<td class="nopad"><select id="{head}">{create_type_options(types)}</select></td>'
         elif head == 'type2':
             table += f'<td class="nopad"><select id="{head}"><option value="">- No type -</option>{create_type_options(types)}</select></td>'
@@ -102,9 +109,11 @@ def mons_row(mon):
     types = session.get('types', None)
     row = f'<tr id="pokemon-{mon['id']}">'
     for head in heads:
-        if head[:-1] == 'type':
+        if head == 'name':
+            row += f'<td class="text-cell">{mon[head]}</td>'
+        elif head[:-1] == 'type':
             type_name = next((type['name'] for type in types if type['id'] == mon[head]), None)
-            row += f'<td>{type_name}</td>'
+            row += f'<td>{type_name if type_name != None else '-'}</td>'
         else:
             row += f'<td>{mon[head]}</td>'
     row += f'<td class="nopad"><button hx-delete="/mons/{mon["id"]}" hx-target="#pokemon-{mon["id"]}" hx-swap="outerHTML" id="delete-{mon["id"]}">Delete</button></td></tr>'

@@ -11,7 +11,12 @@ h1, h2, h3, h4, h5, h6, th {
 }
 
 th, td {
-    padding: 0.25em 0.25em
+    padding: 0.25em 0.25em;
+    text-transform: capitalize;
+}
+
+th:not(.text-cell), td:not(.text-cell) {
+    text-align: end;
 }
 
 table {
@@ -26,6 +31,7 @@ th {
 td[contenteditable="true"] {
     border: 1px solid #AAA;
     border-radius: 0.25em;
+    text-transform: initial;
 }
 
 td.nopad {
@@ -34,7 +40,8 @@ td.nopad {
 
 td > select {
     padding: 0.33em;
-    border-color: #AAA;
+    border: 1px solid #AAA;
+    background-color: #FFF;
     border-radius: 0.25em;
 }
 
